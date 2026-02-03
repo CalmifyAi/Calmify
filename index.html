@@ -1,0 +1,277 @@
+<script>
+/* =====================
+   SESSION + PREMIUM
+===================== */
+let sessions = Number(localStorage.getItem("sessions") || 0);
+let isPremium = localStorage.getItem("premium") === "true";
+
+/* =====================
+   AUDIO (AMBIENT)
+===================== */
+let audioCtx, ambientGain;
+
+function startAmbient(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  ambientGain = audioCtx.createGain();
+  ambientGain.gain.value = 0.12;
+  ambientGain.connect(audioCtx.destination);
+
+  for(let i=0;i<5;i++){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 80 + Math.random()*120;
+    gain.gain.value = 0.02 + Math.random()*0.04;
+    osc.connect(gain);
+    gain.connect(ambientGain);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 900);
+  }
+}
+
+/* =====================
+   VOICE
+===================== */
+function speakText(text){
+  if(!("speechSynthesis" in window)) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95;
+  u.pitch = 0.9;
+  u.volume = 0.8;
+  speechSynthesis.speak(u);
+}
+
+/* =====================
+   START SESSION
+===================== */
+function startSession(){
+  if(!isPremium && sessions >= 3){
+    showPremium();
+    return;
+  }
+
+  sessions++;
+  localStorage.setItem("sessions", sessions);
+  startAmbient();
+  speakText("I’m here with you. Let’s begin.");
+
+  startScreen.classList.add("hidden");
+  setTimeout(()=>{
+    readingScreen.classList.remove("hidden");
+    beginReading();
+  },1500);
+}
+
+/* =====================
+   PREMIUM OVERLAY
+===================== */
+function showPremium(){
+  const overlay = document.createElement("div");
+  overlay.style.position="fixed";
+  overlay.style.inset="0";
+  overlay.style.background="rgba(255,255,255,0.85)";
+  overlay.style.zIndex="10";
+  overlay.style.display="flex";
+  overlay.style.alignItems="center";
+  overlay.style.justifyContent="center";
+
+  overlay.innerHTML = `
+    <div class="card">
+      <h1>Calmify Premium</h1>
+      <p>• Unlimited sessions<br>
+         • Exclusive calming games<br>
+         • Deeper ambient sound layers<br>
+         • Golden rewards</p>
+      <button onclick="unlockPremium()">Unlock Premium</button>
+      <p style="opacity:.6;margin-top:10px">Optional. Calmify still works free.</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function unlockPremium(){
+  localStorage.setItem("premium","true");
+  location.reload();
+}
+
+/* =====================
+   READING
+===================== */
+const passages = [
+  "Slow your breathing. There is no rush.",
+  "Let each word land gently.",
+  "Your voice is calm. You are safe.",
+  "Speak softly. I’m listening.",
+  "Nothing else matters right now."
+];
+
+let voiceTimer = 0;
+
+function beginReading(){
+  const p = document.getElementById("passage");
+  p.textContent = passages[Math.floor(Math.random()*passages.length)];
+  speakText(p.textContent);
+
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    const analyser = audioCtx.createAnalyser();
+    const mic = audioCtx.createMediaStreamSource(stream);
+    mic.connect(analyser);
+    analyser.fftSize = 256;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    function listen(){
+      analyser.getByteFrequencyData(data);
+      const vol = data.reduce((a,b)=>a+b)/data.length;
+      if(vol > 18){
+        p.classList.add("active");
+        voiceTimer++;
+      } else p.classList.remove("active");
+
+      if(voiceTimer > 200){
+        transitionToGames();
+        return;
+      }
+      requestAnimationFrame(listen);
+    }
+    listen();
+  });
+}
+
+/* =====================
+   TRANSITION
+===================== */
+function transitionToGames(){
+  readingScreen.classList.add("hidden");
+  setTimeout(()=>{
+    gameScreen.classList.remove("hidden");
+    startGame();
+  },1500);
+}
+
+/* =====================
+   MINI-GAMES (18 TOTAL)
+   ❌ NO TAP-DOT GAME
+===================== */
+
+const games = [
+  breatheCircle,
+  traceLine,
+  softGlow,
+  cloudDrift,
+  colorFade,
+  leafFloat,
+  lanternRise,
+  rippleTouch,
+  slowCount,
+  softPulse,
+  skyStretch,
+  calmHold,
+  gentleTap,
+  quietMaze,
+  waveFollow,
+  starCollect,
+  featherFall,
+  auroraWatch
+];
+
+function startGame(){
+  const area = gameArea;
+  const title = gameTitle;
+  const hint = gameHint;
+  area.innerHTML = "";
+
+  const pool = isPremium ? games : games.slice(0,10);
+  const game = pool[Math.floor(Math.random()*pool.length)];
+  game(title, hint, area);
+}
+
+/* ===== GAME DEFINITIONS ===== */
+
+function breatheCircle(title,hint,area){
+  title.textContent="Breathe With Me";
+  hint.textContent="In… out… slowly.";
+  const c=document.createElement("div");
+  c.className="circle";
+  area.appendChild(c);
+  finishAfter(12000);
+}
+
+function traceLine(title,hint,area){
+  title.textContent="Trace Calmly";
+  hint.textContent="Follow the dot with your eyes.";
+  const l=document.createElement("div");
+  l.className="trace-line";
+  const d=document.createElement("div");
+  d.className="trace-dot";
+  l.appendChild(d);
+  area.appendChild(l);
+  finishAfter(10000);
+}
+
+function softGlow(title,hint,area){
+  title.textContent="Soft Glow";
+  hint.textContent="Watch the light fade.";
+  const g=document.createElement("div");
+  g.style.width="200px";
+  g.style.height="200px";
+  g.style.borderRadius="50%";
+  g.style.background="rgba(52,211,153,0.3)";
+  g.style.animation="breathe 8s infinite";
+  area.appendChild(g);
+  finishAfter(10000);
+}
+
+/* --- AUTO-GENERATED SIMPLE GAMES --- */
+function simpleGame(name,text,duration=8000){
+  return function(title,hint,area){
+    title.textContent=name;
+    hint.textContent=text;
+    const box=document.createElement("div");
+    box.style.height="120px";
+    box.style.opacity="0.7";
+    area.appendChild(box);
+    finishAfter(duration);
+  }
+}
+
+const cloudDrift=simpleGame("Cloud Drift","Let clouds pass.");
+const colorFade=simpleGame("Color Fade","Watch colors soften.");
+const leafFloat=simpleGame("Floating Leaves","Leaves fall gently.");
+const lanternRise=simpleGame("Lantern Rise","Lanterns lift upward.");
+const rippleTouch=simpleGame("Water Ripples","Feel gentle ripples.");
+const slowCount=simpleGame("Slow Count","Count each breath.");
+const softPulse=simpleGame("Soft Pulse","Follow the rhythm.");
+const skyStretch=simpleGame("Sky Stretch","Relax your shoulders.");
+const calmHold=simpleGame("Calm Hold","Stillness is enough.");
+const gentleTap=simpleGame("Gentle Tap","Tap slowly anywhere.");
+const quietMaze=simpleGame("Quiet Maze","Find calm paths.");
+const waveFollow=simpleGame("Wave Follow","Follow the wave.");
+const starCollect=simpleGame("Star Glow","Stars shimmer.");
+const featherFall=simpleGame("Feather Fall","Feathers drift.");
+const auroraWatch=simpleGame("Aurora Watch","Watch the sky move.");
+
+/* =====================
+   FINISH + REWARD
+===================== */
+function finishAfter(ms){
+  setTimeout(()=>{
+    giveReward();
+    startGame();
+  },ms);
+}
+
+function giveReward(){
+  const s=document.createElement("span");
+  s.className="reward-star";
+  s.textContent = isPremium ? "✦" : "★";
+  rewards.appendChild(s);
+}
+
+/* =====================
+   SERVICE WORKER
+===================== */
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
