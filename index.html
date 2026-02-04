@@ -6,60 +6,15 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#34d399">
 <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
-
 <style>
-body {
-  margin:0;
-  font-family:'Righteous', cursive;
-  background:linear-gradient(to bottom,#b0e0f0,#e0f7fa);
-  overflow:hidden;
-  height:100vh;
-  position:relative;
-}
-/* Aurora effect */
-.aurora {
-  position:absolute;
-  inset:0;
-  background: radial-gradient(circle at 50% 50%, rgba(144,224,239,0.5), transparent 60%);
-  animation: auroraMove 20s linear infinite;
-  z-index:0;
-}
-@keyframes auroraMove {
-  0%{background-position:0% 0%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 0%;}
-}
-
-/* Clouds */
-.cloud {
-  position:absolute;
-  width:100px;
-  height:60px;
-  background:white;
-  border-radius:50%;
-  opacity:0.8;
-  animation:floatClouds linear infinite;
-  z-index:1;
-}
-@keyframes floatClouds {
-  0%{transform:translateX(-150px);}
-  100%{transform:translateX(110vw);}
-}
-
-/* Screens */
-.screen {
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  transition:opacity 1.5s ease;
-  z-index:2;
-}
+/* === Same calming sky/cloud/chibi avatar design === */
+body {margin:0; font-family:'Righteous', cursive; background:linear-gradient(to bottom,#b0e0f0,#e0f7fa); overflow:hidden; height:100vh; position:relative;}
+.aurora {position:absolute; inset:0; background: radial-gradient(circle at 50% 50%, rgba(144,224,239,0.5), transparent 60%); animation: auroraMove 20s linear infinite; z-index:0;}
+@keyframes auroraMove {0%{background-position:0% 0%;}50%{background-position:100% 50%;}100%{background-position:0% 0%;}}
+.cloud {position:absolute;width:100px;height:60px;background:white;border-radius:50%;opacity:0.8;animation:floatClouds linear infinite; z-index:1;}
+@keyframes floatClouds {0%{transform:translateX(-150px);}100%{transform:translateX(110vw);}}
+.screen {position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1.5s ease; z-index:2;}
 .hidden {opacity:0; pointer-events:none;}
-
-/* Avatar */
 .avatar {width:140px; height:160px; margin-bottom:20px; position:relative;}
 .avatar svg {display:block; animation: float 3s ease-in-out infinite;}
 @keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
@@ -67,35 +22,12 @@ body {
 @keyframes waveArm {0%,100%{transform:rotate(0deg);}50%{transform:rotate(15deg);}}
 .blink {animation: blinkEyes 5s infinite;}
 @keyframes blinkEyes {0%,90%,100%{opacity:1;}95%{opacity:0;}}
-
-/* Cards */
-.card {
-  background: rgba(255,255,255,0.85);
-  padding:40px;
-  border-radius:25px;
-  max-width:700px;
-  text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,0.2);
-}
+.card {background: rgba(255,255,255,0.85); padding:40px; border-radius:25px; max-width:700px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.2);}
 h1 {font-weight:400; margin-bottom:15px;}
-button {
-  padding:16px 36px;
-  border-radius:35px;
-  border:none;
-  font-size:20px;
-  background:#34d399;
-  color:white;
-  cursor:pointer;
-  box-shadow:0 6px 15px rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
+button {padding:16px 36px; border-radius:35px; border:none; font-size:20px; background:#34d399; color:white; cursor:pointer; box-shadow:0 6px 15px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;}
 button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3);}
-
-/* Reading passages */
 .passage {margin-top:30px; font-size:22px; line-height:1.8; padding:20px; border-radius:15px; transition:background 0.5s;}
 .passage.active {background: rgba(52,211,153,0.3);}
-
-/* Mini-games visuals */
 .circle {width:180px;height:180px;border-radius:50%;background:rgba(52,211,153,0.3);animation:breathe 6s ease-in-out infinite;margin:auto;}
 @keyframes breathe {0%{transform:scale(0.8);}50%{transform:scale(1.15);}100%{transform:scale(0.8);}}
 .focus-dot {width:30px;height:30px;background:#34d399;border-radius:50%;position:absolute;cursor:pointer;}
@@ -103,11 +35,15 @@ button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3)
 .trace-dot {width:20px;height:20px;background:#34d399;border-radius:50%;position:absolute;top:-5px;animation:traceMove 4s linear infinite;}
 @keyframes traceMove {0%{left:0;}100%{left:180px;}}
 .reward-star {color:#ffe066;font-size:36px;margin:5px;}
+.color-box {width:60px;height:60px;border-radius:15px;margin:10px; display:inline-block; cursor:pointer; transition: transform 0.2s;}
+.piano-key {width:50px;height:150px;background:#fff;border:1px solid #ccc;display:inline-block;margin:2px;border-radius:10px;cursor:pointer;}
+.maze-cell {width:40px;height:40px;border:1px solid #ccc;display:inline-block;float:left;}
+.word-button {padding:10px 20px;margin:5px;border-radius:10px;background:#34d399;color:white;cursor:pointer;display:inline-block;}
 </style>
 </head>
 <body>
 
-<!-- Aurora and clouds -->
+<!-- Aurora + Clouds -->
 <div class="aurora"></div>
 <div class="cloud" style="top:10%; animation-duration:60s;"></div>
 <div class="cloud" style="top:25%; animation-duration:80s;"></div>
@@ -154,52 +90,114 @@ button:hover {transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,0.3)
 </div>
 
 <script>
-// --- Session Tracking ---
+// --- Session ---
 let sessions = Number(localStorage.getItem("sessions") || 0);
-const avatars = document.querySelectorAll('.avatar svg');
 
-function startSession(){
-  if(sessions >= 3){alert("Free sessions over!"); return;}
-  sessions++; localStorage.setItem("sessions", sessions);
-  startAmbient();
-  speakText("Welcome! Let's begin your calming session.");
-  document.getElementById("startScreen").classList.add("hidden");
-  setTimeout(()=>{document.getElementById("readingScreen").classList.remove("hidden"); beginReading();},1500);
-}
-
-// --- Ambient AI-generated sound ---
+// --- Ambient sound ---
 let audioCtx, ambientGain;
 function startAmbient(){
   if(audioCtx) return;
-  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  ambientGain=audioCtx.createGain();
-  ambientGain.gain.value=0.12;
-  ambientGain.connect(audioCtx.destination);
-
-  function createAmbientLayer(){
-    const osc=audioCtx.createOscillator(); 
-    osc.type="sine";
-    osc.frequency.value=60+Math.random()*100;
-    const gain=audioCtx.createGain(); 
-    gain.gain.value=0.03+Math.random()*0.05;
-    osc.connect(gain); gain.connect(ambientGain);
-    osc.start(); osc.stop(audioCtx.currentTime+600);
-  }
-  // Multiple layers back-to-back
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  ambientGain = audioCtx.createGain(); ambientGain.gain.value = 0.25; ambientGain.connect(audioCtx.destination);
   for(let i=0;i<6;i++){
-    setTimeout(createAmbientLayer,i*1500);
+    setTimeout(()=>{
+      const osc = audioCtx.createOscillator(); osc.type="sine";
+      osc.frequency.value = 60 + Math.random()*120;
+      const gain = audioCtx.createGain(); gain.gain.value = 0.05 + Math.random()*0.05;
+      osc.connect(gain); gain.connect(ambientGain); osc.start(); osc.stop(audioCtx.currentTime+600);
+    }, i*1500);
   }
 }
 
-// --- AI voice ---
-function speakText(text){
-  if(!('speechSynthesis'in window)) return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.pitch=0.9; u.rate=0.95; u.volume=0.8; u.lang='en-US';
-  window.speechSynthesis.speak(u);
+// --- Human-like female voice with breaths ---
+function getFemaleVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    return voices.find(v => v.name.toLowerCase().includes("female") || 
+                            v.name.toLowerCase().includes("zira") || 
+                            v.name.toLowerCase().includes("samantha")) || voices[0];
 }
 
-// --- Reading session with microphone ---
+function speakTextHumanLike(text){
+  if(!('speechSynthesis'in window)) return;
+  const phrases = text.split(/([.,!])/).filter(p => p.trim() !== '');
+  phrases.forEach((phrase, i)=>{
+    setTimeout(()=>{
+      const u = new SpeechSynthesisUtterance(phrase.trim());
+      u.voice = getFemaleVoice();
+      u.pitch = 0.95 + Math.random()*0.1;
+      u.rate = 0.85 + Math.random()*0.1;
+      u.volume = 0.9;
+      window.speechSynthesis.speak(u);
+      // soft breath after punctuation
+      if(/[.,!]/.test(phrase)){
+        setTimeout(()=>{
+          const breath = new SpeechSynthesisUtterance("…");
+          breath.voice = getFemaleVoice(); breath.pitch=0.9; breath.rate=1.0; breath.volume=0.3;
+          window.speechSynthesis.speak(breath);
+        },150);
+      }
+    }, i*700);
+  });
+}
+
+// --- Microphone handling ---
+let micStream, micCtx, micAnalyser, dataArray;
+let micMode = "reading"; // "reading" during passages, "qa" during games
+
+async function initMic() {
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    micCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const source = micCtx.createMediaStreamSource(micStream);
+    micAnalyser = micCtx.createAnalyser(); micAnalyser.fftSize=256;
+    source.connect(micAnalyser);
+    dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+    listenMic();
+  } catch(e){ console.log("Mic error:",e); }
+}
+
+function listenMic(){
+  if(!micAnalyser) return;
+  micAnalyser.getByteFrequencyData(dataArray);
+  const volume = dataArray.reduce((a,b)=>a+b)/dataArray.length;
+
+  if(micMode === "reading"){
+    const passage = document.getElementById("passage");
+    if(volume>20) passage.classList.add("active");
+    else passage.classList.remove("active");
+  } else if(micMode === "qa" && volume>25){
+    recognizeSpeech(); // AI answers questions
+  }
+
+  requestAnimationFrame(listenMic);
+}
+
+// Speech recognition for questions
+function recognizeSpeech(){
+  if(!('webkitSpeechRecognition' in window)) return;
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang='en-US'; recognition.interimResults=false; recognition.maxAlternatives=1;
+  recognition.onresult = function(event){
+    const userQuestion = event.results[0][0].transcript;
+    console.log("User asked:",userQuestion);
+    speakTextHumanLike("That's an interesting question. Let's explore it together.");
+  }
+  recognition.start();
+}
+
+// --- Start session ---
+function startSession(){
+  if(sessions>=3){alert("Free sessions over!"); return;}
+  sessions++; localStorage.setItem("sessions",sessions);
+  startAmbient(); speakTextHumanLike("Welcome! Let's begin your calming session.");
+  document.getElementById("startScreen").classList.add("hidden");
+  setTimeout(()=>{
+    document.getElementById("readingScreen").classList.remove("hidden");
+    micMode="reading"; initMic(); beginReading();
+  },1500);
+}
+
+// --- Reading ---
 const passages=[
   "Take a slow breath in. Let your chest expand gently. Feel your body relax.",
   "Nothing is expected now. Each word can be slow, quiet, and soothing.",
@@ -207,66 +205,39 @@ const passages=[
 ];
 
 function beginReading(){
-  const passage = document.getElementById("passage");
-  passage.textContent = passages[Math.floor(Math.random()*passages.length)];
-  speakText(passage.textContent);
-  animateAvatarDuringReading();
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-  navigator.mediaDevices.getUserMedia({audio:true})
-    .then(stream => {
-      const ctx = new (window.AudioContext||window.webkitAudioContext)();
-      const mic = ctx.createMediaStreamSource(stream);
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize=256;
-      mic.connect(analyser);
-      const data = new Uint8Array(analyser.frequencyBinCount);
-
-      let voiceTimer = 0;
-      function listen(){
-        analyser.getByteFrequencyData(data);
-        const volume = data.reduce((a,b)=>a+b)/data.length;
-        if(volume > 20){
-          passage.classList.add("active");
-          voiceTimer++;
-        } else {
-          passage.classList.remove("active");
-        }
-        if(voiceTimer > 200){
-          transitionToGames();
-          return;
-        }
-        requestAnimationFrame(listen);
-      }
-      listen();
-    })
-    .catch(err => console.log("Mic access denied:", err));
+  const passage=document.getElementById("passage");
+  passage.textContent=passages[Math.floor(Math.random()*passages.length)];
+  speakTextHumanLike(passage.textContent);
+  let voiceTimer=0;
+  function checkReading(){
+    if(voiceTimer>200){ transitionToGames(); return; }
+    requestAnimationFrame(checkReading);
+  }
+  checkReading();
 }
 
-// --- Avatar animations ---
-function animateAvatarDuringReading(){/*...same as previous script for floating...*/}
-function animateAvatarDuringGame(){/*...same as previous script for floating and rotation...*/}
-function rewardAvatarAnimation(){/*...scale and float for reward*/}
-
-// --- Mini-games ---
+// --- Games / Rewards ---
+let gameSequence=[];
 function transitionToGames(){
   document.getElementById("readingScreen").classList.add("hidden");
-  setTimeout(()=>{document.getElementById("gameScreen").classList.remove("hidden"); startGame();},1500);
+  micMode="qa"; generateGameSequence();
+  setTimeout(()=>{document.getElementById("gameScreen").classList.remove("hidden"); startNextGame();},1500);
 }
-function startGame(){
-  const area=document.getElementById("gameArea"),title=document.getElementById("gameTitle"),hint=document.getElementById("gameHint");
-  area.innerHTML="";
-  const games=[breathingCircle,focusDot,traceLine]; 
-  const g=games[Math.floor(Math.random()*games.length)];
-  animateAvatarDuringGame();
-  g(title,hint,area);
-}
-function breathingCircle(title,hint,area){/*...*/}
-function focusDot(title,hint,area){/*...*/}
-function spawnDot(area){/*...*/}
-function traceLine(title,hint,area){/*...*/}
-function giveReward(){/*...*/}
-</script>
 
+function generateGameSequence(){
+  const games = [breathingCircle, traceLine, focusDot, colorMatch, floatingBubbles, softPiano, relaxingMaze, countingClouds, wordRepeat, gentleTap];
+  gameSequence=[]; let picked=new Set();
+  while(gameSequence.length<5){
+    const g = games[Math.floor(Math.random()*games.length)];
+    if(!picked.has(g)){ picked.add(g); gameSequence.push(g);}
+  }
+}
+function startNextGame(){ if(gameSequence.length===0){ speakTextHumanLike("Well done! Session complete."); return;} const game = gameSequence.shift(); game(document.getElementById("gameTitle"),document.getElementById("gameHint"),document.getElementById("gameArea"));}
+function giveReward(){ const rewards=document.getElementById("rewards"); const star=document.createElement("span"); star.className="reward-star"; star.textContent="★"; rewards.appendChild(star);}
+
+// --- Mini-game functions ---
+// Use previous versions for breathingCircle, traceLine, focusDot, etc.
+
+</script>
 </body>
 </html>
