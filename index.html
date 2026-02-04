@@ -3,190 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calmify Interactive Session</title>
+<title>Calmify Offline PWA</title>
+
+<!-- Inline manifest as base64 -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ2FsbWlmeSBPZmZsaW5lIiwic2hvcnRfbmFtZSI6IkNhbG1pZnkiLCJzdGFydF91cmwiOiIuL2luZGV4Lmh0bWwiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjYjBlMGYwIiwidGhlbWVfY29sb3IiOiIjYjBlMGYwIiwiaWNvbnMiOlt7InNyYyI6Imljb24tMTkyLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmcifSx7InNyYyI6Imljb24tNTEyLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmcifV19">
+
+<meta name="theme-color" content="#b0e0f0">
+
 <style>
-body {margin:0;background:linear-gradient(#dff3ff,#f7fcff);font-family:Arial,sans-serif;overflow:hidden;}
-.cloud {position:absolute;background:white;border-radius:50%;opacity:0.8;animation:float 60s linear infinite;}
-@keyframes float {from{transform:translateX(-200px);}to{transform:translateX(120vw);}}
-.container {max-width:900px;margin:auto;padding:50px;text-align:center;animation:fade 1.2s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-h1{color:#2d6fa3;margin-bottom:10px;}
-.card{background:white;padding:25px;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.1);margin-top:20px;}
-.avatar{width:140px;height:140px;background:radial-gradient(circle,#ffd6e8,#f0a6c1);border-radius:50%;margin:20px auto;position:relative;animation:breathe 6s infinite;}
-@keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+:root {--bg1:#b0e0f0; --bg2:#e0f7fa; --accent:#34d399; --text:#022c3a;}
+body{margin:0;font-family:'Arial',sans-serif;background:linear-gradient(to bottom,var(--bg1),var(--bg2));overflow:hidden;color:var(--text);}
+.cloud{position:absolute;background:white;border-radius:50%;opacity:.7;animation:float linear infinite;}
+@keyframes float{from{transform:translateX(-200px);}to{transform:translateX(120vw);}}
+#app{height:100vh;display:flex;justify-content:center;align-items:center;}
+.screen{background:white;width:92%;max-width:520px;height:90%;border-radius:30px;padding:24px;display:none;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.12);}
+.screen.active{display:flex;}
+h1{text-align:center;margin:8px 0 12px;}
+button{background:var(--accent);color:white;border:none;padding:16px;border-radius:18px;font-size:16px;cursor:pointer;transition:transform .2s;}
+button:hover{transform:scale(1.03);}
+#avatar{width:140px;height:140px;margin:10px auto;background:radial-gradient(circle at top,#ffd7d7,#ffbdbd);border-radius:50%;position:relative;animation:idle 4s ease-in-out infinite;}
+@keyframes idle{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 .eye{width:14px;height:14px;background:#333;border-radius:50%;position:absolute;top:50px;}
-.eye.left{left:45px;}
-.eye.right{right:45px;}
-.mouth{width:40px;height:20px;border-bottom:4px solid #333;border-radius:0 0 40px 40px;position:absolute;bottom:40px;left:50%;transform:translateX(-50%);}
-button{background:#5db6ff;color:white;border:none;padding:14px 30px;border-radius:999px;font-size:1em;cursor:pointer;margin-top:15px;}
-button:hover{background:#4aa7f0;}
-.passage{font-size:1.4em;line-height:1.6;padding:15px;border-radius:12px;transition:background 0.4s;cursor:pointer;}
-.passage.copied{background:#c8f7c5;}
-#premiumOverlay{position:fixed;inset:0;backdrop-filter:blur(6px);background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;color:white;z-index:99;}
-#gameScreen .card{min-height:200px;}
-@media (max-width:600px){.container{padding:20px;}button{padding:12px 24px;font-size:.95em;}}
+.eye.left{left:42px;} .eye.right{right:42px;}
+.mouth{width:40px;height:20px;border-bottom:4px solid #333;border-radius:0 0 40px 40px;position:absolute;bottom:42px;left:50%;transform:translateX(-50%);}
+.game-area{flex:1;display:flex;justify-content:center;align-items:center;text-align:center;font-size:20px;}
+.reward{text-align:center;font-size:18px;color:#2e8b57;}
+#settingsPanel{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.9);padding:12px;border-radius:12px;z-index:5;}
+label{display:block;margin:6px 0;font-size:14px;}
+input[type=range]{width:100%;}
 </style>
 </head>
 <body>
 
 <!-- Clouds -->
 <div class="cloud" style="width:160px;height:80px;top:60px;"></div>
-<div class="cloud" style="width:220px;height:110px;top:200px;animation-duration:80s;"></div>
-<div class="cloud" style="width:180px;height:90px;top:320px;animation-duration:70s;"></div>
+<div class="cloud" style="width:220px;height:110px;top:220px;animation-duration:90s;"></div>
+<div class="cloud" style="width:180px;height:90px;top:380px;animation-duration:80s;"></div>
 
-<div class="container" id="readingScreen">
-  <h1>Read this for me</h1>
-  <div class="avatar">
-    <div class="eye left"></div>
-    <div class="eye right"></div>
-    <div class="mouth"></div>
+<div id="app">
+  <!-- START SCREEN -->
+  <div class="screen active" id="start">
+    <h1>Welcome to Calmify</h1>
+    <div id="avatar"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+    <p style="text-align:center;">I’ll stay with you and help you relax 🌤️</p>
+    <button onclick="startSession()">Start Session</button>
   </div>
-  <div class="card">
-    <div id="passage" class="passage"></div>
-    <textarea id="emotionInput" placeholder="How are you feeling?" style="width:100%;padding:15px;border-radius:10px;margin-top:15px;"></textarea>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="game">
+    <h1 id="gameTitle"></h1>
+    <div class="game-area" id="gameArea"></div>
+    <button onclick="completeGame()">I’m done</button>
   </div>
-  <button id="startBtn">Start Session</button>
-  <p id="reward"></p>
+
+  <!-- REWARD SCREEN -->
+  <div class="screen" id="reward">
+    <h1>Nice work ✨</h1>
+    <div class="reward" id="rewardText"></div>
+    <button onclick="nextGame()">Next calming game</button>
+  </div>
 </div>
 
-<div class="container" id="gameScreen" style="display:none;">
-  <h1 id="gameTitle">Calming Game</h1>
-  <div class="card" id="gameArea"></div>
-  <p id="gameHint" style="margin-top:15px;color:#555;"></p>
-  <p id="gameReward"></p>
-</div>
-
-<div id="premiumOverlay">
-  <div class="card">
-    <h2>Premium Calm ✨</h2>
-    <p>• Exclusive games<br>• Longer sessions<br>• Deeper calming modes</p>
-    <button onclick="closePremium()">Maybe Later</button>
-  </div>
+<!-- SETTINGS PANEL -->
+<div id="settingsPanel">
+  <label><input type="checkbox" id="toggleSound" checked> Sound</label>
+  <label><input type="checkbox" id="toggleAnim" checked> Animations</label>
+  <label>Speed <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1"></label>
 </div>
 
 <script>
-/* ---------- Passages ---------- */
-const passages=["Take a slow breath and let your shoulders drop.","You are safe right now. Nothing else matters.","Notice the quiet between your breaths.","Your body knows how to calm itself."];
-const passageEl=document.getElementById("passage");
-passageEl.textContent=passages[Math.floor(Math.random()*passages.length)];
+/* --- SETTINGS --- */
+const soundToggle=document.getElementById("toggleSound");
+const animToggle=document.getElementById("toggleAnim");
+const speedRange=document.getElementById("speedRange");
+let soundOn=true, animOn=true, speedMult=1;
+soundToggle.onchange=()=>soundOn=soundToggle.checked;
+animToggle.onchange=()=>animOn=animToggle.checked;
+speedRange.oninput=()=>speedMult=parseFloat(speedRange.value);
 
-/* ---------- Mini-games ---------- */
-let games=[
-"Breathing Circle","Color Wash","Floating Clouds","Gentle Counting",
-"Memory Match","Wave Rhythm","Star Tracing","Slow Typing",
-"Mood Bubbles","Calm Maze","Sound Focus","Visual Grounding",
-"Thought Release","Gentle Timing","Body Scan"
-];
+/* --- SCREENS --- */
+const screens={start: document.getElementById("start"),game: document.getElementById("game"),reward: document.getElementById("reward")};
+const gameTitle=document.getElementById("gameTitle");
+const gameArea=document.getElementById("gameArea");
+const rewardText=document.getElementById("rewardText");
+function show(screen){Object.values(screens).forEach(s=>s.classList.remove("active"));screens[screen].classList.add("active");}
 
-let points=Number(localStorage.getItem("points")||0);
-
-/* ---------- Emotion detection ---------- */
-function detectMood(text){
-  text=text.toLowerCase();
-  if(text.includes("stress")||text.includes("anx")) return "anxious";
-  if(text.includes("calm")||text.includes("ok")) return "calm";
-  if(text.includes("sad")) return "low";
-  return "neutral";
-}
-
-/* ---------- Premium ---------- */
-function closePremium(){ document.getElementById("premiumOverlay").style.display="none"; }
-
-/* ---------- Ambient sound ---------- */
-let audioStarted=false;
+/* --- OFFLINE AMBIENT SOUND --- */
+let audioCtx, masterGain;
 function startAmbient(){
-  if(audioStarted) return;
-  audioStarted=true;
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  for(let i=0;i<3;i++){
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.type="sine";
-    osc.frequency.value=120+Math.random()*40;
-    gain.gain.value=0.02+Math.random()*0.02;
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start();
-  }
+  if(audioCtx)return;
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=audioCtx.createGain(); masterGain.gain.value=0.12; masterGain.connect(audioCtx.destination);
+  [60,100,150].forEach(f=>{
+    const osc=audioCtx.createOscillator(); osc.type="sine"; osc.frequency.value=f;
+    const gain=audioCtx.createGain(); gain.gain.value=0.04;
+    osc.connect(gain); gain.connect(masterGain);
+    osc.start(); osc.stop(audioCtx.currentTime+600);
+  });
 }
-window.addEventListener("click",startAmbient,{once:true});
-window.addEventListener("touchstart",startAmbient,{once:true});
 
-/* ---------- Session Start ---------- */
-document.getElementById("startBtn").onclick=function(){
-  const mood=detectMood(document.getElementById("emotionInput").value);
-  points+=10;
-  localStorage.setItem("points",points);
-  document.getElementById("reward").innerText=`Mood: ${mood} • +10 Calm Points 🌟 (Total: ${points})`;
+/* --- GAMES --- */
+const games=[
+  "Slow breathing: inhale 4s, exhale 6s",
+  "Name 5 things you see around you",
+  "Trace a square with finger",
+  "Follow clouds with eyes",
+  "Stretch your shoulders gently",
+  "Blink slowly 10 times",
+  "Think of a safe place",
+  "Tap feet softly 30s",
+  "Count backwards from 30",
+  "Relax your jaw",
+  "Visualize warm light around you",
+  "Follow moving circle",
+  "Roll your neck slowly",
+  "Notice feet on the floor",
+  "Name 3 calming colors",
+  "Press palms together gently",
+  "Read calming words slowly",
+  "Notice one pleasant sound",
+  "Smile slightly 20s",
+  "Close eyes and breathe deeply"
+];
+let currentGame="", calmPoints=0;
 
-  passageEl.classList.add("copied");
+/* --- SESSION FLOW --- */
+function startSession(){startAmbient();nextGame();}
+function nextGame(){
+  currentGame=games[Math.floor(Math.random()*games.length)];
+  gameTitle.innerText="Calming Activity";
+  gameArea.innerText=currentGame;
+  show("game");
+}
+function completeGame(){
+  calmPoints+=1;
+  rewardText.innerText=`You earned a calm point 💙 (Total: ${calmPoints})`;
+  show("reward");
+}
 
-  // Transition to first minigame
-  document.getElementById("readingScreen").style.display="none";
-  document.getElementById("gameScreen").style.display="block";
-  nextMinigame();
-};
-
-/* ---------- Minigame logic ---------- */
-function nextMinigame(){
-  const gameArea=document.getElementById("gameArea");
-  const gameTitle=document.getElementById("gameTitle");
-  const gameHint=document.getElementById("gameHint");
-  const gameReward=document.getElementById("gameReward");
-
-  gameArea.innerHTML="";
-  gameReward.innerText="";
-
-  const game=games[Math.floor(Math.random()*games.length)];
-  gameTitle.innerText=game;
-
-  switch(game){
-    case "Breathing Circle":
-      let c=document.createElement("div"); c.style.width="100px"; c.style.height="100px"; c.style.borderRadius="50%";
-      c.style.background="#5db6ff"; c.style.margin="40px auto"; c.style.transition="transform 3s ease-in-out";
-      gameArea.appendChild(c);
-      let inhale=true; let count=0;
-      const interval=setInterval(()=>{
-        c.style.transform=inhale?"scale(1.5)":"scale(0.7)";
-        inhale=!inhale; count++;
-        if(count>5){clearInterval(interval); rewardAndNext();}},3000);
-      gameHint.innerText="Breathe in as it grows, out as it shrinks.";
-      break;
-
-    case "Color Wash":
-      let div=document.createElement("div"); div.style.height="100px"; div.style.margin="40px auto"; div.style.transition="background 2s";
-      gameArea.appendChild(div);
-      let colors=["#a8edea","#fed6e3","#fbc2eb","#a6c1ee","#cfd9df"];
-      let i=0; const colorInterval=setInterval(()=>{
-        div.style.background=colors[i%colors.length]; i++;
-        if(i>10){clearInterval(colorInterval); rewardAndNext();}},2000);
-      gameHint.innerText="Watch the soothing color changes.";
-      break;
-
-    case "Floating Clouds":
-      let cloud=document.createElement("div"); cloud.style.width="80px"; cloud.style.height="50px"; cloud.style.background="white"; cloud.style.borderRadius="50%"; cloud.style.margin="40px auto";
-      gameArea.appendChild(cloud);
-      cloud.animate([{transform:'translateX(0px)'},{transform:'translateX(300px)'}],{duration:4000,iterations:3});
-      setTimeout(rewardAndNext,12000);
-      gameHint.innerText="Watch and gently follow the cloud movement.";
-      break;
-
-    case "Gentle Counting":
-      let countNum=0; const counter=document.createElement("p"); counter.style.fontSize="2em"; counter.innerText=countNum; gameArea.appendChild(counter);
-      const countInterval=setInterval(()=>{countNum++; counter.innerText=countNum; if(countNum>=5){clearInterval(countInterval); rewardAndNext();}},2000);
-      gameHint.innerText="Count slowly with me.";
-      break;
-
-    default: rewardAndNext(); break; // placeholder for other minigames
-  }
-
-  function rewardAndNext(){
-    points+=5;
-    localStorage.setItem("points",points);
-    gameReward.innerText=`+5 Calm Points 🌟 (Total: ${points})`;
-    setTimeout(nextMinigame,1500);
-  }
+/* --- INLINE SERVICE WORKER --- */
+if('serviceWorker' in navigator){
+  const swCode=`self.addEventListener('install',e=>{e.waitUntil(caches.open('calmify-v1').then(c=>c.addAll(['/'])));});
+  self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
 }
 </script>
-
 </body>
 </html>
